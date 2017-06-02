@@ -1,0 +1,208 @@
+﻿@using System.Data
+<style type="text/css">
+    .hotelTalbe
+    {
+        width: 97%;
+        border: solid #000;
+        border-width: 0px 1px 1px 0px;
+    }
+    .hotelTalbe td
+    {
+        border: solid #000;
+        border-width: 1px 0px 0px 1px;
+    }
+    .tr-ok
+    {
+        background: #c0c0c0;
+    }
+    .tr-ed
+    {
+        background: #c71585;
+    }
+</style>
+<div id="setBinding">
+    酒店名称：@ViewBag.HotelName
+    酒店id：@ViewBag.HotelId
+    <input type="hidden" value="@ViewBag.HotelId" name="hotelId" id="hotelId"/>
+    淘宝hid:
+    @if (string.IsNullOrEmpty(@ViewBag.Hid))
+    {
+        <input type="text" id="hid" value="@ViewBag.Hid" name="hid" readonly="readonly"/>
+    }
+    else
+    {
+        <a href="http://kezhan.trip.taobao.com/ota/hotel_room_detail.htm?hid=@ViewBag.Hid" id="aHid" target='_blank'>@ViewBag.Hid</a>
+        <input type="text" id="hid" value="@ViewBag.Hid" name="hid" style="display: none"/>
+    }
+    <input type="button" onclick="hidEdit(this)" value="修改" />
+    <br />
+    <table class="hotelTalbe">
+        <tr>
+            <th style="width: 15%">
+            </th>
+            <th style="width: 5%">
+                房型id
+            </th>
+            <th style="width: 28%">
+                房型名称
+            </th>
+            <th style="width: 13%">
+                rid
+            </th>
+            <th style="width: 13%">
+                rpid
+            </th>
+            <th style="width: 13%">
+                gid
+            </th>
+        </tr>
+        @{
+            if (ViewBag.Rooms == null)
+            {
+                return;
+            }
+            for (int i = 0; i < ViewBag.Rooms.Length; i++)
+            {
+            <tr class="tr-ok">
+                <td>
+                    <input type="button" value="修改" onclick="Edit(this)" />
+                    @if (string.IsNullOrWhiteSpace(ViewBag.Rooms[i]["rid"].ToString()) || string.IsNullOrEmpty(ViewBag.Rooms[i]["rpid"].ToString()) || string.IsNullOrEmpty(ViewBag.Rooms[i]["rpid"].ToString()))
+                    {
+                        <input type="button" value="上传" onclick="Upload(this)" />
+                    }
+                </td>
+                <td>
+                    @ViewBag.Rooms[i]["room"]
+                    <input name="Rooms.roomid" type="hidden" value="@ViewBag.Rooms[i]["room"].ToString().Trim()"/>
+                    <input name="Rooms.edit" type="hidden" value="0" />
+                </td>
+                <td>
+                    @ViewBag.Rooms[i]["roomName"]
+                </td>
+                <td>
+                    <input name="Rooms.rid" type="text" style="width: 100px" value="@ViewBag.Rooms[i]["rid"].ToString().Trim()" onclick="" readonly="readonly"/>
+                </td>
+                <td>
+                    <input name="Rooms.rpid" type="text" style="width: 100px" value="@ViewBag.Rooms[i]["rpid"].ToString().Trim()" onclick="" readonly="readonly"/>
+                </td>
+                <td>
+                    @ViewBag.Rooms[i]["gid"]
+                </td>
+            </tr>
+            }
+        }
+    </table>
+</div>
+<script type="text/javascript">
+    function Upload(thiz) {
+        $.messager.confirm('确认', '您确定要上传新房型到淘宝？', function (r) {
+            if (r) {
+                UploadToTaobao(thiz);
+            }
+        });
+
+    }
+    function CheckHotelChange(thiz) {
+        var hid = $("#hid").val();
+        var hotelid = $("#hotelId").val();
+        $.ajax({
+            url: "Room/HotelCheck",
+            type: "POST",
+            async: true,
+            data: { hotelid: hotelid, hid: hid },
+            success: function (d) {
+                if (d.Status) {
+                    if (d.Result == 0) {
+                        SaveHotelChange(hid, hotelid);
+                    } else if (d.Result == -1) {
+                        $.messager.confirm('确认', d.ErrorMessage, function (r) {
+                            if (r) {
+
+                                SaveHotelChange(hid, hotelid);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+        $('#win').window("close");
+    }
+    function SaveHotelChange(hid, hotelid) {
+        $.ajax({
+            url: "Hotel/MappingSave",
+            type: "GET",
+            async: true,
+            data: { hotelid: hotelid, hid: hid },
+            success: function (d) {
+                if (d.Status) {
+                    alert("上传成功");
+                } else {
+                    alert("失败:\r\n" + d.ErrorMessage);
+                }
+            }
+        });
+    }
+    function SaveRoomChange(thiz) {
+        $.messager.confirm('确认', '您确定要修改映射信息？', function (r) {
+            if (r) {
+                var room = $(thiz).closest('tr').find("input").serialize();
+                var hotelid = $("#hotelId").val();
+                var hid = $("#hid").val();
+                $.ajax({
+                    url: "Room/MappingSave?" + room + '&Rooms.hotelId=' + hotelid + '&Rooms.hid=' + hid,
+                    type: "GET",
+                    //                    data: { room: room, hotelid: hotelid, hid: hid },
+                    success: function (d) {
+                        if (d.Status) {
+                            $.messager.alert("成功", "上传成功");
+                            $('#win').window('refresh', 'Room/RoomDetail?hotelid=' + d.Result);
+                        } else {
+                            $.messager.alert("失败", d.ErrorMessage);
+                        }
+                    }
+                });
+            }
+        });
+    }
+    function UploadToTaobao(thiz) {
+        var rooms = {};
+        rooms['rooms[0].hotelId'] = $("#hotelId").val();
+        rooms['rooms[0].hid'] = $("#hid").val();
+        rooms['rooms[0].roomid'] = $(thiz).closest('tr').find("input[name='Rooms.roomid']").val();
+        rooms['rooms[0].rid'] = $(thiz).closest('tr').find("input[name='Rooms.rid']").val();
+        rooms['rooms[0].rpid'] = $(thiz).closest('tr').find("input[name='Rooms.rpid']").val();
+        $.ajax({
+            url: "Room/RoomUpload",
+            type: "POST",
+            data: rooms,
+            success: function (d) {
+                if (d.Status) {
+                    $.messager.alert("成功", "上传成功");
+                    $('#win').window('refresh', 'Room/RoomDetail?hotelid=' + d.Result);
+                } else {
+                    $.messager.alert("失败", d.ErrorMessage);
+                }
+            }
+        });
+    }
+    function hidEdit(thiz) {
+        if ($(thiz).val() == "修改") {
+            $("#hid").attr("readonly", false);
+            $("#hid").show();
+            $("#aHid").hide();
+            $(thiz).val("保存");
+        } else {
+            CheckHotelChange(thiz);
+        }
+    }
+    function Edit(thiz) {
+        if ($(thiz).val() == "修改") {
+            $(thiz).closest('tr').removeClass().addClass("tr-ed");
+            $(thiz).closest('tr').find("input[type='text']").attr("readonly", false);
+            $(thiz).closest('tr').find("input[name$='.edit']").val(1);
+            $(thiz).val("保存");
+        } else {
+            SaveRoomChange(thiz);
+        }
+    }
+</script>

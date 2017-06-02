@@ -1,0 +1,183 @@
+﻿@{
+    ViewBag.Title = "房型管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(function () {
+        $("#hotelRooms").treegrid({
+            idField: 'id',
+            treeField: 'name',
+            checkbox: true,
+            singleSelect: false,
+            autoRowHeight: false,
+            columns: [
+                [
+                    { field: 'ck', checkbox: true },
+                    { title: '名称', field: 'name' },
+                    { title: '房型ID', field: 'room', width: 100 },
+                    { title: '状态', field: 'status', width: 100 },
+                    { title: '淘宝酒店id', field: 'hid', width: 120 },
+                    { title: '淘宝房型id', field: 'rid', width: 120 },
+                    { title: '淘宝商品id', field: 'rpid', width: 120 },
+                    { title: '淘宝价格计划id', field: 'gid', width: 120 },
+                    { title: '立减', field: 'lijian', width: 120 },
+                    {
+                        title: '操作',
+                        field: 'op',
+                        width: 120,
+                        formatter: function (value, row, index) {
+                            if (row.hotelid != null) {
+                                return '<a href="javascript:void(0)" onclick="showRoomDetail(' + row.hotelid + ',' + row.hid + ')">详情</a>';
+                            }
+                            return "";
+                        }
+                    }
+                ]
+            ],
+            onSelect: function (rowData) {
+                if (rowData.status == null && rowData.children != null && rowData.children.length > 0) {
+                    var c = rowData.children;
+                    for (var i = 0; i < c.length; i++) {
+                        $("#hotelRooms").treegrid('selectRow', c[i].id);
+                    }
+                }
+            },
+            onUnselect: function (rowData) {
+                if (rowData.status == null && rowData.children != null && rowData.children.length > 0) {
+                    var c = rowData.children;
+                    for (var i = 0; i < c.length; i++) {
+                        $("#hotelRooms").treegrid('unselectRow', c[i].id);
+                    }
+                }
+            }
+        });
+    });
+
+    function showRoomDetail(id, hid) {
+        $('#win').window({
+            width: 700,
+            height: 400,
+            modal: true,
+            title: "酒店详情"
+        });
+        $('#win').window('refresh', 'Room/RoomDetail?hotelid=' + id);
+    }
+
+    function TuiSong() {
+        var roomList = [];
+        var list = $("#hotelRooms").treegrid('getSelections');
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].lijian == null || list[i].rpid == null) {
+                continue;
+            }
+            roomList.push(list[i].room);
+        }
+        if (roomList.length > 0) {
+            $.ajax({
+                url: "/api/TaobaoUpLoad/" + roomList.join(','),
+                type: "GET",
+                success: function () {
+                    $.messager.alert("", "房价房态推送成功");
+                }
+            });
+        }
+
+    }
+
+    function SetLijian() {
+        var roomList = [];
+        var lijian = $("#lijiantxt").val();
+        var list = $("#hotelRooms").treegrid('getSelections');
+        if (isNaN(lijian) || lijian < 0) {
+            $.messager.alert("", "请正确填写立减比例");
+            return;
+        }
+        if (list == null || list.length === 0) {
+            $.messager.alert("", "请选择需要设置的酒店或者房型");
+            return;
+        }
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].lijian == null || list[i].room == null) {
+                continue;
+            }
+            roomList.push(list[i].room);
+        }
+        $.ajax({
+            url: "Room/SetLijian",
+            data: { rooms: roomList, lijian: lijian },
+            type: "POST",
+            traditional: true,
+            success: function (d) {
+                SearchBtn();
+            }
+        });
+    }
+
+    function SearchBtn() {
+        var hotels = $("#hotelIds").val();
+        var rooms = $("#roomIds").val();
+        var status = $("input[name='Status']:checked").val();
+        $.ajax({
+            url: "Room/HotelRoomInfo",
+            data: { hotelIds: hotels, roomIds: rooms, status: status },
+            success: function (d) {
+                if (d.Status) {
+                    $("#hotelRooms").treegrid({ data: d.Result });
+                    $("#hotelRooms").treegrid('collapseAll');
+                } else {
+                    alert(d.ErrorMessage);
+                }
+            }
+        });
+    }
+
+    function UploadToTaobao() {
+        var s = $("#hotelRooms").treegrid('getSelections');
+        var list = [];
+        for (var i = 0; i < s.length; i++) {
+            //            if (s[i]._parentId != null && (s[i].rpid != "" || s[i].rpid != null) && (s[i].status == '房型未上传')) {
+            //                list.push(s[i].room);
+            //            }
+            if (s[i]._parentId != null && (s[i].rpid != "" || s[i].rpid != null)) {
+                list.push(s[i].room);
+            }
+        }
+        $.ajax({
+            url: "/Room/RoomUploadMain",
+            type: "post",
+            data: { rooms: list },
+            traditional: true,
+            success: function (d) {
+                alert("上传成功");
+                SearchBtn();
+            }
+        });
+    }
+</script>
+<div>
+    <form id="hotelSearch">
+    <input id="hotelIds" name="HotelIds" class="easyui-textbox" data-options="prompt:'酒店id，查询多个酒店用,隔开(最多40条)'"
+        style="width: 300px; height: 30px" />
+    <input id="roomIds" name="RoomIds" class="easyui-textbox" data-options="prompt:'房型Id，查询多个房型用,隔开(最多40条)'"
+        style="width: 300px; height: 30px" />
+    <input id="status1" name="Status" type="radio" value="-1" checked="checked" /><label
+        for="status1">全部</label>
+    <input id="status2" name="Status" type="radio" value="1" /><label for="status2">未上传</label>
+    <input id="status3" name="Status" type="radio" value="0" /><label for="status3">已上传</label>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search" onclick="SearchBtn()"
+        style="width: 100px; height: 30px">搜索</a> <a href="javascript:void(0)" class="easyui-linkbutton"
+            iconcls="icon-save" onclick="UploadToTaobao()" style="width: 100px; height: 30px">
+            上传到淘宝</a>
+    <input id="lijiantxt" name="RoomIds" class="easyui-textbox" data-options="prompt:'立减比例'"
+        style="width: 70px; height: 30px" />
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-save" onclick="SetLijian()"
+        style="width: 100px; height: 30px">立减设置</a> <a href="javascript:void(0)" class="easyui-linkbutton"
+            iconcls="icon-save" onclick="TuiSong()" style="width: 100px; height: 30px">立即推送</a>
+    </form>
+</div>
+<div>
+    <table id="hotelRooms">
+    </table>
+</div>
+<div id="win">
+</div>

@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F95FAB88-C7E2-462A-AEB3-AD60564DB5DF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Taobao.Top2.Application</RootNamespace>
+    <AssemblyName>Taobao.Top2.Application</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common.Logging">
+      <HintPath>..\Resource\dll\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Aop">
+      <HintPath>..\Resource\dll\Spring.Aop.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Core">
+      <HintPath>..\Resource\dll\Spring.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TopSdk">
+      <HintPath>..\Resource\dll\TopSdk.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CleanData.cs" />
+    <Compile Include="Common\TopConfig.cs" />
+    <Compile Include="IHotelUpload.cs" />
+    <Compile Include="Implement\HotelUpload.cs" />
+    <Compile Include="Implement\OrderUpload.cs" />
+    <Compile Include="Implement\ProductUpload.cs" />
+    <Compile Include="Implement\RoomUpload.cs" />
+    <Compile Include="IOrderUpload.cs" />
+    <Compile Include="IProductUpload.cs" />
+    <Compile Include="IRoomUpload.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common.Tool\Common.Tool.csproj">
+      <Project>{A8B54FD2-500C-476E-ABD4-965B2396740A}</Project>
+      <Name>Common.Tool</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Taobao.Top2.DataAccess\Taobao.Top2.DataAccess.csproj">
+      <Project>{1BA67EAA-70B8-4967-9413-250C78A78D0B}</Project>
+      <Name>Taobao.Top2.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Taobao.Top2.Entity\Taobao.Top2.Entity.csproj">
+      <Project>{A8A72E90-0094-476F-B89F-82E89E56DF92}</Project>
+      <Name>Taobao.Top2.Entity</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

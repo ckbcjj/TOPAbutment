@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "酒店管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(function () {
+        $("#hotels").datagrid({
+            rownumbers: true,
+            checkbox: true,
+            columns: [
+                [
+                    { field: 'ck', checkbox: true },
+                    { field: 'HotelId', title: '青芒果酒店ID', width: 100 },
+                    { field: 'HotelName', title: '酒店名称', width: 300 },
+                    { field: 'status', title: '状态', width: 50 },
+                    {
+                        field: 'hid',
+                        title: '淘宝链接',
+                        width: 300,
+                        formatter: function (value, row, index) {
+                            if (row.status == 1) {
+                                return "<a href='http://kezhan.trip.taobao.com/ota/hotel_room_detail.htm?hid="
+                                    + value + "' target='_blank'>" + value + "<a>";
+                            } else {
+                                return "-";
+                            }
+                        }
+                    }
+                ]
+            ]
+        });
+    });
+    function SearchBtn() {
+        $.ajax({
+            url: "Hotel/HotelList",
+            data: $("#hotelSearch").serialize(),
+            success: function (d) {
+                if (d.Status) {
+                    $("#hotels").datagrid({ data: d.Result });
+                } else {
+                    alert(d.ErrorMessage);
+                }
+            }
+        });
+    }
+
+    function UploadToTaobao() {
+        var selectRows = $("#hotels").datagrid('getSelections');
+        var hotelids = [];
+        for (var f = 0; f < selectRows.length; f++) {
+            hotelids[f] = selectRows[f].HotelId;
+        }
+        $.ajax({
+            url: "Hotel/UpLoadToTaobao",
+            data: { 'hotels': hotelids },
+            type: "POST",
+            traditional: true,
+            success: function (d) {
+                if (d.Status) {
+                    $("#hotels").datagrid({ data: d.Result });
+                } else {
+                    alert(d.ErrorMessage);
+                }
+            }
+        });
+    }
+</script>
+<div>
+    <form id="hotelSearch">
+    <input id="hotelIds" name="HotelIds" class="easyui-textbox" data-options="prompt:'酒店id，查询多个酒店用,隔开(最多40家一次)'"
+        style="width: 300px; height: 30px" />
+    <input id="hotelName" name="hotelName" class="easyui-textbox" data-options="prompt:'酒店名称'"
+        style="width: 300px; height: 30px" />
+    <input id="status1" name="Status" type="radio" value="-1" checked="checked" /><label
+        for="status1">全部</label>
+    <input id="status2" name="Status" type="radio" value="1" /><label for="status2">未上传</label>
+    <input id="status3" name="Status" type="radio" value="0" /><label for="status3">已上传</label>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-search" onclick="SearchBtn()"
+        style="width: 100px; height: 30px">搜索</a> <a href="javascript:void(0)" class="easyui-linkbutton"
+            iconcls="icon-save" onclick="UploadToTaobao()" style="width: 100px; height: 30px">
+            上传到淘宝</a>
+    </form>
+</div>
+<div>
+    <table id="hotels">
+    </table>
+</div>

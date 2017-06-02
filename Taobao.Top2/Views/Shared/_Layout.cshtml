@@ -1,0 +1,51 @@
+﻿@using System.Data
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="/Easyui/themes/default/easyui.css" rel="stylesheet" type="text/css" />
+    @*<link href="/Easyui/themes/default/easyui.css" rel="stylesheet" type="text/css" />*@
+    <link href="/Easyui/themes/icon.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="~/Easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="~/Easyui/jquery.easyui.min.js"></script>
+    <script src="/Easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+    <style type="text/css">
+        .header
+        {
+            background: url(/Content/h_top_bg.jpg) repeat-x top;
+            border-bottom: 1px #FFF solid;
+        }
+        .headerWarp
+        {
+            height: 120px;
+            width: 950px;
+            margin: 0 auto;
+            background: url(/Content/top_bg.jpg) no-repeat;
+        }
+    </style>
+</head>
+<body class="easyui-layout">
+    <div data-options="region:'north',border:false" style="" class="header">
+        <div class="headerWarp">
+        </div>
+    </div>
+    <div data-options="region:'west',split:true,title:'导航'" style="width: 150px; padding: 10px;">
+        <a href="Hotel">酒店管理</a><br />
+        <br />
+        <br />
+        <a href="Room">房型管理</a></div>
+    @*<div data-options="region:'east',split:true,collapsed:true,title:'East'" style="width: 100px;
+        padding: 10px;">
+        east region</div>*@
+    <div data-options="region:'south',border:false" style="height: 50px; background: #13687a;
+        padding: 10px;">
+        <p style="text-align: center; color: #d6f8ff;">
+            芒果网旗下机构 沪ICP备06035143号 上海市互联网违法与违规举报中心</p>
+    </div>
+    <div data-options="region:'center',title:'详情'">
+        @RenderBody()
+    </div>
+</body>
+</html>
