@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00.Solution Items", "00.Sol
 		Resource\dll\log4net.dll = Resource\dll\log4net.dll
 		Resource\dll\Spring.Aop.dll = Resource\dll\Spring.Aop.dll
 		Resource\dll\Spring.Core.dll = Resource\dll\Spring.Core.dll
+		TextFile1.txt = TextFile1.txt
 		Resource\dll\TopSdk.dll = Resource\dll\TopSdk.dll
 	EndProjectSection
 EndProject
