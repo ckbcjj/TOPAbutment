@@ -272,6 +272,11 @@ namespace Taobao.Top2.Application.Implement
 
             foreach (HotelOrderInfo order in hotelOrderList)
             {
+                if (order == null)
+                {
+                    log.Error("获取订单为null,请检查。");
+                    continue;
+                }
                 string sql = @"select count(*) from hotelorders where torderid='" + order.PartnerOrderId + "' and ProcStatus in (1,4,5,6,7,8)";
                 DataTable roomdatatable = null;
                 try
