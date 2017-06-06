@@ -238,16 +238,6 @@
     <Compile Include="Report\ApiReporter.cs" />
     <Compile Include="Report\TopSdkFeedbackUploadResponse.cs" />
     <Compile Include="Report\TopSdkFeedbackUploadRequest.cs" />
-    <Compile Include="Util\SecurityUtil.cs" />
-    <Compile Include="Util\SpiUtils.cs" />
-    <Compile Include="Util\FileItem.cs" />
-    <Compile Include="Util\CountDownLatch.cs" />
-    <Compile Include="Util\XmlWriter.cs" />
-    <Compile Include="Util\WebUtils.cs" />
-    <Compile Include="Util\StringUtil.cs" />
-    <Compile Include="Util\AtsUtils.cs" />
-    <Compile Include="Util\TopUtils.cs" />
-    <Compile Include="Util\RequestValidator.cs" />
     <Compile Include="Parser\TopJsonReader.cs" />
     <Compile Include="Parser\TopXmlParser.cs" />
     <Compile Include="Parser\TopAttribute.cs" />
@@ -509,6 +499,16 @@
     <Compile Include="Response\SellercenterUserPermissionsGetResponse.cs" />
     <Compile Include="Response\TradeOrderskuUpdateResponse.cs" />
     <Compile Include="Response\TradeShippingaddressUpdateResponse.cs" />
+    <Compile Include="Util\AtsUtils.cs" />
+    <Compile Include="Util\CountDownLatch.cs" />
+    <Compile Include="Util\FileItem.cs" />
+    <Compile Include="Util\RequestValidator.cs" />
+    <Compile Include="Util\SecurityUtil.cs" />
+    <Compile Include="Util\SpiUtils.cs" />
+    <Compile Include="Util\StringUtil.cs" />
+    <Compile Include="Util\TopUtils.cs" />
+    <Compile Include="Util\WebUtils.cs" />
+    <Compile Include="Util\XmlWriter.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

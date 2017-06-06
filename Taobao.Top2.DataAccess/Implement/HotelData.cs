@@ -64,9 +64,14 @@ LEFT JOIN
  (SELECT DISTINCT province,
                   provincename,
                    city,
-                   cityname
-   FROM taobao_city) ts ON (charindex(hs.provincename,ts.provincename)>0 or charindex(ts.provincename,hs.provincename)>0)
-AND (charindex(hs.cityname,ts.cityname)>0 or charindex(ts.cityname,hs.cityname)>0)";
+                   cityname,areaname
+   FROM taobao_city) ts ON 
+(charindex(hs.provincename,ts.provincename)>0 or charindex(ts.provincename,hs.provincename)>0)
+AND 
+(
+charindex(hs.cityname,ts.cityname)>0 or charindex(ts.cityname,hs.cityname)>0
+--OR charindex(hs.cityname,ts.areaname)>0 or charindex(ts.areaname,hs.cityname)>0  --进一步按照城市名称区域名称匹配
+)";
                 return SqlHelper.ExcuteDataTable(string.Format(format, str), null, SqlHelper.conStrRead);
             }
             catch (Exception err)
